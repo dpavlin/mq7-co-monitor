@@ -64,14 +64,12 @@ void pwm_adjust()
     for(int x = 0; x < 100; x ++) //measure over about 100ms to ensure stable result
     {
       avg_v += analogRead(A1);
+      //Serial.print("A1="); Serial.println(A1);
       delay(time_scale);
     }
     avg_v *= 0.01;
     avg_v *= raw2v;
-    Serial.print("adjusting PWM w=");
-    Serial.print(w);
-    Serial.print(", V=");
-    Serial.println(avg_v);
+    Serial.print("PWM_w="); Serial.print(w); Serial.print(" PWM_V="); Serial.println(avg_v);
     if(avg_v < 3.6 && previous_v > 3.6) //we found optimal width
     {
       float dnew = 3.6 - avg_v; //now we need to find if current one
@@ -214,15 +212,15 @@ void setup() {
   pinMode(A1, INPUT);
   setTimer1PWM(1023, 0);
   analogReference(DEFAULT);
-  Serial.begin(9600);
+  Serial.begin(116200);
 
   pwm_adjust();
 
-  Serial.print("PWM result: width ");
+  Serial.print("PWM_width=");
   Serial.print(opt_width);
-  Serial.print(", voltage ");
+  Serial.print(" PWM_voltage=");
   Serial.println(opt_voltage);
-  Serial.println("Data output: raw A0 value, heating on/off (0.1 off 1000.1 on), CO ppm from last measurement cycle");
+  //Serial.println("Data output: raw A0 value, heating on/off (0.1 off 1000.1 on), CO ppm from last measurement cycle");
   //beep buzzer in the beginning to indicate that it works
   buzz_on();
   delay(100*time_scale);
@@ -303,10 +301,11 @@ void loop()
   if(sec10 - last_print > 9) //print measurement result into serial 2 times per second
   {
     last_print = sec10;
+    Serial.print("raw=");
     Serial.print(sens_val);
-    Serial.print(" ");
+    Serial.print(" power=");
     Serial.print(0.1 + phase*1000);
-    Serial.print(" ");
+    Serial.print(" co_ppm=");
     Serial.println(last_CO_ppm_measurement);
   }
 }
